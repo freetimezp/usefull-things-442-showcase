@@ -1,98 +1,272 @@
 gsap.registerPlugin(ScrollTrigger);
 
 document.addEventListener("DOMContentLoaded", () => {
-    const lenis = new Lenis();
+    /* =========================
+       LENIS
+    ========================= */
+
+    const lenis = new Lenis({
+        lerp: 0.08,
+        smoothWheel: true,
+        syncTouch: false,
+    });
+
     lenis.on("scroll", ScrollTrigger.update);
+
     gsap.ticker.add((time) => {
         lenis.raf(time * 1000);
     });
+
     gsap.ticker.lagSmoothing(0);
 
-    const spotlightSection = document.querySelector(".spotlight");
-    const projectIndex = document.querySelector(".project-index h1");
-    const projectImgs = document.querySelectorAll(".project-img");
-    const projectImagesContainer = document.querySelector(".project-images");
-    const projectNames = document.querySelectorAll(".project-names p");
-    const projectNamesContainer = document.querySelector(".project-names");
-    const totalProjectCount = projectNames.length;
+    /* =========================
+       ELEMENTS
+    ========================= */
 
-    const spotlightSectionPadding = parseFloat(getComputedStyle(spotlightSection).padding);
+    const spotlight = document.querySelector(".spotlight");
 
-    const spotlightSectionHeight = spotlightSection.offsetHeight;
-    const projectIndexHeight = projectIndex.offsetHeight;
-    const containerHeight = projectNamesContainer.offsetHeight;
-    const imagesHeight = projectImagesContainer.offsetHeight;
+    const projectIndex = document.querySelector(".project-index h2");
 
-    const moveDistanceIndex = spotlightSectionHeight - spotlightSectionPadding * 2 - projectIndexHeight;
-    const moveDistanceNames = spotlightSectionHeight - spotlightSectionPadding * 2 - containerHeight;
-    const moveDistanceImages = window.innerHeight - imagesHeight;
+    const projectImages = [...document.querySelectorAll(".project-img")];
 
-    const imgActivationThreshold = window.innerHeight / 2;
+    const projectNames = [...document.querySelectorAll(".project-name")];
+
+    const imagesContainer = document.querySelector(".project-images");
+
+    const progressFill = document.querySelector(".progress-fill");
+
+    const total = projectImages.length;
+
+    /* =========================
+       INTRO ANIMATION
+    ========================= */
+
+    const introTL = gsap.timeline({
+        defaults: {
+            ease: "power4.out",
+        },
+    });
+
+    introTL
+        .from(".intro-top span", {
+            y: 20,
+            opacity: 0,
+            stagger: 0.1,
+            duration: 1,
+        })
+        .from(
+            ".intro .eyebrow",
+            {
+                y: 30,
+                opacity: 0,
+                duration: 0.8,
+            },
+            "-=0.6",
+        )
+        .from(
+            ".intro h1",
+            {
+                y: 80,
+                opacity: 0,
+                scale: 0.96,
+                duration: 1.4,
+            },
+            "-=0.5",
+        )
+        .from(
+            ".intro-bottom span",
+            {
+                y: 20,
+                opacity: 0,
+                stagger: 0.1,
+                duration: 0.8,
+            },
+            "-=0.8",
+        );
+
+    /* =========================
+       INITIAL IMAGE STATE
+    ========================= */
+
+    gsap.set(projectImages, {
+        opacity: 0.12,
+        scale: 0.92,
+    });
+
+    gsap.set(projectImages[0], {
+        opacity: 1,
+        scale: 1,
+    });
+
+    /* =========================
+       SPOTLIGHT
+    ========================= */
 
     ScrollTrigger.create({
-        trigger: ".spotlight",
+        trigger: spotlight,
         start: "top top",
-        end: `+=${window.innerHeight * 5}px`,
+
+        end: () => `+=${window.innerHeight * 7}`,
+
         pin: true,
-        pinSpacing: true,
         scrub: 1,
+
         onUpdate: (self) => {
             const progress = self.progress;
-            const currentIndex = Math.min(Math.floor(progress * totalProjectCount) + 1, totalProjectCount);
 
-            projectIndex.textContent = `
-                ${String(currentIndex).padStart(2, "0")}/
-                ${String(totalProjectCount).padStart(2, "0")}
-            `;
+            /* =====================
+               CURRENT PROJECT
+            ===================== */
 
-            gsap.set(projectIndex, {
-                y: progress * moveDistanceIndex,
+            const currentIndex = Math.min(
+                Math.floor(progress * total),
+                total - 1,
+            );
+
+            /* =====================
+               COUNTER
+            ===================== */
+
+            projectIndex.textContent = String(currentIndex + 1).padStart(
+                2,
+                "0",
+            );
+
+            /* =====================
+               IMAGE MOVEMENT
+            ===================== */
+
+            const maxMove = imagesContainer.offsetHeight - window.innerHeight;
+
+            gsap.set(imagesContainer, {
+                y: -progress * maxMove,
             });
 
-            gsap.set(projectImagesContainer, {
-                y: progress * moveDistanceImages,
+            /* =====================
+               PROGRESS BAR
+            ===================== */
+
+            gsap.set(progressFill, {
+                width: `${progress * 100}%`,
             });
 
-            projectImgs.forEach((img) => {
-                const imgRect = img.getBoundingClientRect();
-                const imgTop = imgRect.top;
-                const imgBottom = imgRect.bottom;
+            /* =====================
+               ACTIVE IMAGE
+            ===================== */
 
-                if (imgTop <= imgActivationThreshold && imgBottom >= imgActivationThreshold) {
-                    gsap.set(img, {
-                        opacity: 1,
-                        scale: 1.1,
-                        duration: 0.3,
-                        ease: "power3.inOut",
-                    });
-                } else {
-                    gsap.set(img, {
-                        opacity: 0.2,
-                        scale: 1,
-                        duration: 0.3,
-                        ease: "power3.inOut",
-                    });
-                }
-            });
+            projectImages.forEach((img, index) => {
+                const isActive = index === currentIndex;
 
-            projectNames.forEach((p, index) => {
-                const startProgress = index / totalProjectCount;
-                const endProgress = (index + 1) / totalProjectCount;
-                const projectProgress = Math.max(
-                    0,
-                    Math.min(1, (progress - startProgress) / (endProgress - startProgress))
-                );
-
-                gsap.set(p, {
-                    y: -projectProgress * moveDistanceNames,
+                gsap.to(img, {
+                    opacity: isActive ? 1 : 0.12,
+                    scale: isActive ? 1 : 0.92,
+                    filter: isActive ? "grayscale(0)" : "grayscale(0.25)",
+                    duration: 0.5,
+                    overwrite: true,
+                    ease: "power3.out",
                 });
 
-                if (projectProgress > 0 && projectProgress < 1) {
-                    gsap.set(p, { color: "#fff" });
+                if (isActive) {
+                    img.classList.add("active");
                 } else {
-                    gsap.set(p, { color: "#4a4a4a" });
+                    img.classList.remove("active");
                 }
             });
+
+            /* =====================
+               PROJECT NAMES
+            ===================== */
+
+            projectNames.forEach((name, index) => {
+                const isActive = index === currentIndex;
+
+                name.classList.toggle("active", isActive);
+
+                gsap.to(name, {
+                    opacity: isActive ? 1 : 0.25,
+                    x: isActive ? -8 : 0,
+                    duration: 0.35,
+                    overwrite: true,
+                    ease: "power2.out",
+                });
+            });
         },
+    });
+
+    /* =========================
+       IMAGE PARALLAX
+    ========================= */
+
+    projectImages.forEach((item) => {
+        const image = item.querySelector("img");
+
+        gsap.to(image, {
+            yPercent: -10,
+
+            ease: "none",
+
+            scrollTrigger: {
+                trigger: item,
+
+                start: "top bottom",
+                end: "bottom top",
+
+                scrub: true,
+            },
+        });
+    });
+
+    /* =========================
+       MOUSE IMAGE MOVEMENT
+    ========================= */
+
+    let mouseX = 0;
+    let mouseY = 0;
+
+    let targetX = 0;
+    let targetY = 0;
+
+    window.addEventListener("mousemove", (event) => {
+        mouseX = (event.clientX / window.innerWidth - 0.5) * 12;
+
+        mouseY = (event.clientY / window.innerHeight - 0.5) * 8;
+    });
+
+    function mouseLoop() {
+        targetX += (mouseX - targetX) * 0.05;
+        targetY += (mouseY - targetY) * 0.05;
+
+        gsap.set(".project-img.active img", {
+            x: targetX,
+            y: targetY,
+        });
+
+        requestAnimationFrame(mouseLoop);
+    }
+
+    mouseLoop();
+
+    /* =========================
+       OUTRO REVEAL
+    ========================= */
+
+    gsap.from(".outro-inner", {
+        y: 80,
+        opacity: 0,
+
+        duration: 1,
+
+        scrollTrigger: {
+            trigger: ".outro",
+            start: "top 70%",
+        },
+    });
+
+    /* =========================
+       RESIZE
+    ========================= */
+
+    window.addEventListener("resize", () => {
+        ScrollTrigger.refresh();
     });
 });
