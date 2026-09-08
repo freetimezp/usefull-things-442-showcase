@@ -99,6 +99,33 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     /* =========================
+    MOUSE IMAGE MOVEMENT
+    ========================= */
+
+    let mouseX = 0;
+    let mouseY = 0;
+
+    let activeImage = projectImages[0].querySelector("img");
+
+    let moveX = gsap.quickTo(activeImage, "x", {
+        duration: 0.6,
+        ease: "power3.out",
+    });
+
+    let moveY = gsap.quickTo(activeImage, "y", {
+        duration: 0.6,
+        ease: "power3.out",
+    });
+
+    window.addEventListener("mousemove", (event) => {
+        mouseX = (event.clientX / window.innerWidth - 0.5) * 12;
+        mouseY = (event.clientY / window.innerHeight - 0.5) * 8;
+
+        moveX(mouseX);
+        moveY(mouseY);
+    });
+
+    /* =========================
        SPOTLIGHT
     ========================= */
 
@@ -168,6 +195,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 if (isActive) {
                     img.classList.add("active");
+
+                    const newImage = img.querySelector("img");
+
+                    if (newImage !== activeImage) {
+                        activeImage = newImage;
+
+                        moveX = gsap.quickTo(activeImage, "x", {
+                            duration: 0.6,
+                            ease: "power3.out",
+                        });
+
+                        moveY = gsap.quickTo(activeImage, "y", {
+                            duration: 0.6,
+                            ease: "power3.out",
+                        });
+
+                        // Reset the new image slightly
+                        moveX(0);
+                        moveY(0);
+                    }
                 } else {
                     img.classList.remove("active");
                 }
@@ -217,36 +264,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     /* =========================
-       MOUSE IMAGE MOVEMENT
-    ========================= */
-
-    let mouseX = 0;
-    let mouseY = 0;
-
-    let targetX = 0;
-    let targetY = 0;
-
-    window.addEventListener("mousemove", (event) => {
-        mouseX = (event.clientX / window.innerWidth - 0.5) * 12;
-
-        mouseY = (event.clientY / window.innerHeight - 0.5) * 8;
-    });
-
-    function mouseLoop() {
-        targetX += (mouseX - targetX) * 0.05;
-        targetY += (mouseY - targetY) * 0.05;
-
-        gsap.set(".project-img.active img", {
-            x: targetX,
-            y: targetY,
-        });
-
-        requestAnimationFrame(mouseLoop);
-    }
-
-    mouseLoop();
-
-    /* =========================
        OUTRO REVEAL
     ========================= */
 
@@ -267,6 +284,7 @@ document.addEventListener("DOMContentLoaded", () => {
     ========================= */
 
     window.addEventListener("resize", () => {
+        location.reload();
         ScrollTrigger.refresh();
     });
 });
