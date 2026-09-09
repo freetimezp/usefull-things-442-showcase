@@ -1,10 +1,6 @@
 gsap.registerPlugin(ScrollTrigger);
 
 document.addEventListener("DOMContentLoaded", () => {
-    /* =========================
-       LENIS
-    ========================= */
-
     const lenis = new Lenis({
         lerp: 0.08,
         smoothWheel: true,
@@ -19,41 +15,36 @@ document.addEventListener("DOMContentLoaded", () => {
 
     gsap.ticker.lagSmoothing(0);
 
-    /* =========================
-       ELEMENTS
-    ========================= */
+    //elements
 
     const spotlight = document.querySelector(".spotlight");
-
     const projectIndex = document.querySelector(".project-index h2");
 
     const projectImages = [...document.querySelectorAll(".project-img")];
-
     const projectNames = [...document.querySelectorAll(".project-name")];
 
-    const imagesContainer = document.querySelector(".project-images");
+    const imageContainer = document.querySelector(".project-images");
 
     const progressFill = document.querySelector(".progress-fill");
 
     const total = projectImages.length;
 
-    /* =========================
-       INTRO ANIMATION
-    ========================= */
+    //intro
 
-    const introTL = gsap.timeline({
+    const introTl = gsap.timeline({
         defaults: {
             ease: "power4.out",
         },
     });
 
-    introTL
+    introTl
         .from(".intro-top span", {
             y: 20,
             opacity: 0,
             stagger: 0.1,
             duration: 1,
         })
+
         .from(
             ".intro .eyebrow",
             {
@@ -63,6 +54,7 @@ document.addEventListener("DOMContentLoaded", () => {
             },
             "-=0.6",
         )
+
         .from(
             ".intro h1",
             {
@@ -73,6 +65,7 @@ document.addEventListener("DOMContentLoaded", () => {
             },
             "-=0.5",
         )
+
         .from(
             ".intro-bottom span",
             {
@@ -84,10 +77,6 @@ document.addEventListener("DOMContentLoaded", () => {
             "-=0.8",
         );
 
-    /* =========================
-       INITIAL IMAGE STATE
-    ========================= */
-
     gsap.set(projectImages, {
         opacity: 0.12,
         scale: 0.92,
@@ -98,9 +87,7 @@ document.addEventListener("DOMContentLoaded", () => {
         scale: 1,
     });
 
-    /* =========================
-    MOUSE IMAGE MOVEMENT
-    ========================= */
+    //mouse
 
     let mouseX = 0;
     let mouseY = 0;
@@ -117,17 +104,15 @@ document.addEventListener("DOMContentLoaded", () => {
         ease: "power3.out",
     });
 
-    window.addEventListener("mousemove", (event) => {
-        mouseX = (event.clientX / window.innerWidth - 0.5) * 12;
-        mouseY = (event.clientY / window.innerHeight - 0.5) * 8;
+    window.addEventListener("mousemove", (e) => {
+        mouseX = (e.clientX / window.innerWidth - 0.5) * 12;
+        mouseY = (e.clientY / window.innerHeight - 0.5) * 8;
 
         moveX(mouseX);
         moveY(mouseY);
     });
 
-    /* =========================
-       SPOTLIGHT
-    ========================= */
+    //spotlight
 
     ScrollTrigger.create({
         trigger: spotlight,
@@ -141,45 +126,29 @@ document.addEventListener("DOMContentLoaded", () => {
         onUpdate: (self) => {
             const progress = self.progress;
 
-            /* =====================
-               CURRENT PROJECT
-            ===================== */
-
             const currentIndex = Math.min(
                 Math.floor(progress * total),
                 total - 1,
             );
-
-            /* =====================
-               COUNTER
-            ===================== */
 
             projectIndex.textContent = String(currentIndex + 1).padStart(
                 2,
                 "0",
             );
 
-            /* =====================
-               IMAGE MOVEMENT
-            ===================== */
+            const maxMove = imageContainer.offsetHeight - window.innerHeight;
 
-            const maxMove = imagesContainer.offsetHeight - window.innerHeight;
-
-            gsap.set(imagesContainer, {
+            gsap.set(imageContainer, {
                 y: -progress * maxMove,
             });
 
-            /* =====================
-               PROGRESS BAR
-            ===================== */
+            //progress bar
 
             gsap.set(progressFill, {
                 width: `${progress * 100}%`,
             });
 
-            /* =====================
-               ACTIVE IMAGE
-            ===================== */
+            //active image
 
             projectImages.forEach((img, index) => {
                 const isActive = index === currentIndex;
@@ -187,7 +156,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 gsap.to(img, {
                     opacity: isActive ? 1 : 0.12,
                     scale: isActive ? 1 : 0.92,
-                    filter: isActive ? "grayscale(0)" : "grayscale(0.25)",
+                    filter: isActive ? "grayscale(0)" : "grayscale(.25)",
                     duration: 0.5,
                     overwrite: true,
                     ease: "power3.out",
@@ -211,7 +180,6 @@ document.addEventListener("DOMContentLoaded", () => {
                             ease: "power3.out",
                         });
 
-                        // Reset the new image slightly
                         moveX(0);
                         moveY(0);
                     }
@@ -220,9 +188,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             });
 
-            /* =====================
-               PROJECT NAMES
-            ===================== */
+            //project names
 
             projectNames.forEach((name, index) => {
                 const isActive = index === currentIndex;
@@ -240,32 +206,25 @@ document.addEventListener("DOMContentLoaded", () => {
         },
     });
 
-    /* =========================
-       IMAGE PARALLAX
-    ========================= */
+    //parallax
 
     projectImages.forEach((item) => {
         const image = item.querySelector("img");
 
         gsap.to(image, {
             yPercent: -10,
-
             ease: "none",
 
             scrollTrigger: {
                 trigger: item,
-
                 start: "top bottom",
                 end: "bottom top",
-
                 scrub: true,
             },
         });
     });
 
-    /* =========================
-       OUTRO REVEAL
-    ========================= */
+    //outro
 
     gsap.from(".outro-inner", {
         y: 80,
@@ -279,12 +238,9 @@ document.addEventListener("DOMContentLoaded", () => {
         },
     });
 
-    /* =========================
-       RESIZE
-    ========================= */
-
     window.addEventListener("resize", () => {
         location.reload();
+
         ScrollTrigger.refresh();
     });
 });

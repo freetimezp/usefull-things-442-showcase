@@ -1,0 +1,121 @@
+<div class="art-shape shape-star">✦</div>
+                <div class="art-shape shape-circle"></div>
+                <div class="art-shape shape-scribble">〰</div>
+                <div class="art-shape shape-plus">+</div>
+
+
+
+01 — STUDENT SHOWCASE
+
+
+
+Where
+                    <span>art</span>
+                    becomes
+                    <span>language.</span>
+
+
+
+        <span>SCROLL TO EXPLORE</span>
+                <span>10 SELECTED WORKS</span>
+
+
+      <div class="gallery-decoration decor-one">✦</div>
+            <div class="gallery-decoration decor-two">✧</div>
+            <div class="gallery-decoration decor-three">+</div>
+
+
+
+02 — THE COLLECTION
+
+
+CURRENTLY EXHIBITING
+
+
+
+    <div class="project-names">
+                <div class="project-name active">
+                    <span>01</span>
+                    <p>Cat Truth</p>
+                </div>
+
+                <div class="project-name">
+                    <span>02</span>
+                    <p>Butterfly's Legacy</p>
+                </div>
+
+                <div class="project-name">
+                    <span>03</span>
+                    <p>Think about Colors</p>
+                </div>
+
+                <div class="project-name">
+                    <span>04</span>
+                    <p>We are ready</p>
+                </div>
+
+                <div class="project-name">
+                    <span>05</span>
+                    <p>Nolimit ideas</p>
+                </div>
+
+                <div class="project-name">
+                    <span>06</span>
+                    <p>Teaching art</p>
+                </div>
+
+                <div class="project-name">
+                    <span>07</span>
+                    <p>Open your mind</p>
+                </div>
+
+                <div class="project-name">
+                    <span>08</span>
+                    <p>Professional Shard</p>
+                </div>
+
+                <div class="project-name">
+                    <span>09</span>
+                    <p>Flowers</p>
+                </div>
+
+                <div class="project-name">
+                    <span>10</span>
+                    <p>Art studio</p>
+                </div>
+            </div>
+
+
+
+OIL / ACRYLIC / MIXED MEDIA
+
+
+03 — END OF COLLECTION
+
+
+
+Ten works. Ten perspectives. One school of thought.
+
+
+ART SCHOOL © 2026
+
+
+
+
+
+
+
+
+:root {
+    --cream: #fff7df;
+    --ink: #25232a;
+
+    --yellow: #ffd84d;
+    --coral: #ff7667;
+    --blue: #65c7ff;
+    --purple: #a98cff;
+    --green: #7ee0a1;
+    --pink: #ff9ed8;
+
+    --muted: #77736c;
+}
